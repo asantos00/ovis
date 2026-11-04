@@ -1,0 +1,50 @@
+name: CLA Assistant
+# Asks every commit author of a pull request to sign CLA.md once, by commenting the sign phrase on
+# the PR, and records the signature in signatures/cla.json on the `cla-signatures` branch (the
+# branch must exist; it holds nothing else). The maintainer and bots are allowlisted.
+# pull_request_target runs this file from main with the base repository's token, so a fork's PR
+# is checked without a maintainer approving the run. It never checks out or runs the PR's code:
+# the action reads the PR's commit authors through the API only.
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened]
+  issue_comment:
+    types: [created]
+permissions:
+  actions: write
+  contents: write
+  pull-requests: write
+  statuses: write
+jobs:
+  cla:
+    name: CLA
+    if: >-
+      github.event_name == 'pull_request_target' ||
+      (github.event.issue.pull_request &&
+        (github.event.comment.body == 'recheck' ||
+          github.event.comment.body == 'I have read the CLA Document and I hereby sign the CLA'))
+    # GitHub-hosted: it needs no toolchain and checks out nothing
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Check and record CLA signatures
+        uses: contributor-assistant/github-action@ca4a40a7d1004f18d9960b404b97e5f30a505a08 # v2.6.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          path-to-signatures: signatures/cla.json
+          path-to-document: https://github.com/devswha/ovis/blob/main/CLA.md
+          branch: cla-signatures
+          allowlist: devswha,bot*,dependabot*,github-actions*,*[bot],web-flow
+          custom-notsigned-prcomment: |
+            Thank you for your contribution! Before we can merge this PR, every commit author needs to sign our [Contributor License Agreement (CLA)](https://github.com/devswha/ovis/blob/main/CLA.md).
+
+            **To sign the CLA**, comment on this PR with:
+            ```
+            I have read the CLA Document and I hereby sign the CLA
+            ```
+
+            You sign once, and it covers your later pull requests. Comment `recheck` to run the check again.
+          custom-pr-sign-comment: I have read the CLA Document and I hereby sign the CLA
+          custom-allsigned-prcomment: All contributors have signed the CLA. Thank you!
+          lock-pullrequest-aftermerge: false
