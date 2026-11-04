@@ -74,6 +74,9 @@ A preview deploy serves it too, so a pull request can check `/demo/` on its prev
   its link is set in `BETA_LINKS` there: the TestFlight public link, and the Google Group whose
   members may join the Google Play closed test. Its Windows tile downloads `Ovis.exe`, like the
   Windows download button in `assets/platform.js`, with the install command as a second way.
+  On Linux that button downloads the desktop app's AppImage for the visitor's CPU
+  (`Ovis-linux-x64.AppImage` or `Ovis-linux-arm64.AppImage`, handed to the newest release by
+  `_redirects`); the install command stays a second way in the download row.
   The sections carry `id="iphone"` and `id="android"`: the home page's App Store and Google Play
   icons, and its download button on a phone (`assets/platform.js`), link to `/beta/#iphone` and
   `/beta/#android`.

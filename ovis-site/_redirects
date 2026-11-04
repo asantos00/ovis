@@ -8,6 +8,9 @@
 /Ovis.dmg https://github.com/devswha/ovis/releases/latest/download/Ovis.dmg 302
 # Ovis for Windows: the newest release's Ovis.exe (.github/workflows/windows-app.yml attaches it).
 /Ovis.exe https://github.com/devswha/ovis/releases/latest/download/Ovis.exe 302
+# The desktop app for Linux: the newest release's AppImage for each CPU (.github/workflows/desktop.yml).
+/Ovis-linux-x64.AppImage https://github.com/devswha/ovis/releases/latest/download/Ovis-linux-x64.AppImage 302
+/Ovis-linux-arm64.AppImage https://github.com/devswha/ovis/releases/latest/download/Ovis-linux-arm64.AppImage 302
 # Addresses people guess for the docs, which live in the repository.
 /docs https://github.com/devswha/ovis/blob/main/docs/guide.md 302
 /docs/* https://github.com/devswha/ovis/blob/main/docs/guide.md 302

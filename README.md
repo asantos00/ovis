@@ -40,12 +40,12 @@ Ovis brings the coding agents on your computer to your phone, any browser and th
 
 - **Mac:** download [Ovis.dmg](https://ovis.sh/Ovis.dmg), open it and click **Install**.
 - **Windows:** download [Ovis.exe](https://ovis.sh/Ovis.exe), run it and click **Install**.
-- **Linux:** run this in a terminal.
+- **Linux:** download the desktop app, [Ovis-linux-x64.AppImage](https://ovis.sh/Ovis-linux-x64.AppImage) (or [arm64](https://ovis.sh/Ovis-linux-arm64.AppImage)), make it executable (`chmod +x`) and open it. It carries everything it needs, so nothing else is installed. Or run this in a terminal:
   ```bash
   curl -fsSL https://ovis.sh/install.sh | sh
   ```
 
-Each one adds herdr and Bun if they are missing; Node is not needed. Other ways to install, step by step: [INSTALL.md](INSTALL.md).
+The Mac and Windows apps and the command add herdr and Bun if they are missing; Node is not needed. Other ways to install, step by step: [INSTALL.md](INSTALL.md).
 
 **On your phone**
 
