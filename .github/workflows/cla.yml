@@ -35,7 +35,7 @@ jobs:
           path-to-signatures: signatures/cla.json
           path-to-document: https://github.com/devswha/ovis/blob/main/CLA.md
           branch: cla-signatures
-          allowlist: devswha,bot*,dependabot*,github-actions*,*[bot],web-flow
+          allowlist: devswha,*[bot],web-flow
           custom-notsigned-prcomment: |
             Thank you for your contribution! Before we can merge this PR, every commit author needs to sign our [Contributor License Agreement (CLA)](https://github.com/devswha/ovis/blob/main/CLA.md).
 

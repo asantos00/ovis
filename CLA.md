@@ -89,8 +89,10 @@ jurisdiction by law.
 ## 10. Entire agreement
 
 This Agreement is the entire agreement between You and the Maintainer about Contributions. It
-applies to every Contribution You Submit from the day You agree to it. Contributions merged before
-this Agreement took effect stay under the license they were contributed under.
+applies to every Contribution You Submit after You agree to it, and to every Contribution You
+Submitted before that and that had not been merged when You agreed, including the pull request on
+which You sign. Contributions merged before this Agreement took effect stay under the license they
+were contributed under.
 
 ---
 
