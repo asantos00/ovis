@@ -40,9 +40,9 @@ Ovis brings the coding agents on your computer to your phone, any browser and th
 
 - **Mac:** download the desktop app for [Apple silicon](https://ovis.sh/Ovis-mac-arm64.dmg) or [Intel](https://ovis.sh/Ovis-mac-x64.dmg), open it and drag Ovis to **Applications**.
 - **Windows:** download [Ovis.exe](https://ovis.sh/Ovis.exe), run it and click **Install**.
-- **Linux:** on Debian or Ubuntu, download the desktop app for [x64](https://ovis.sh/Ovis-linux-x64.deb) or [arm64](https://ovis.sh/Ovis-linux-arm64.deb) and install it (`sudo apt install ./Ovis-linux-x64.deb`). Elsewhere, take the AppImage for [x64](https://ovis.sh/Ovis-linux-x64.AppImage) or [arm64](https://ovis.sh/Ovis-linux-arm64.AppImage), make it executable (`chmod +x`) and open it; it needs FUSE 2 (`libfuse2`).
+- **Linux:** on Debian or Ubuntu, download the desktop app for [x64](https://ovis.sh/Ovis-linux-x64.deb) or [arm64](https://ovis.sh/Ovis-linux-arm64.deb) and install it (`sudo apt install ./Ovis-linux-*.deb`). Elsewhere, take the AppImage for [x64](https://ovis.sh/Ovis-linux-x64.AppImage) or [arm64](https://ovis.sh/Ovis-linux-arm64.AppImage), make it executable (`chmod +x Ovis-linux-*.AppImage`) and open it.
 
-The desktop app carries everything it needs, so nothing else is installed, and runs its own terminals apart from herdr. To use Ovis with your herdr sessions instead, run this in a terminal on Linux or macOS:
+The Mac and Linux desktop app carries everything it needs, so nothing else is installed, and runs its own terminals apart from herdr. To use Ovis with your herdr sessions instead, run this in a terminal on Linux or macOS:
 
 ```bash
 curl -fsSL https://ovis.sh/install.sh | sh

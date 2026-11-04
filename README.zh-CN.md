@@ -42,9 +42,9 @@ Ovis 把你电脑上的编程智能体带到手机、任意浏览器和 Mac 应�
 
 - **Mac：** 下载 [Apple 芯片版](https://ovis.sh/Ovis-mac-arm64.dmg) 或 [Intel 版](https://ovis.sh/Ovis-mac-x64.dmg) 桌面应用，打开后把 Ovis 拖到 **应用程序**（Applications）。
 - **Windows：** 下载 [Ovis.exe](https://ovis.sh/Ovis.exe)，运行后点击 **Install**。
-- **Linux：** 在 Debian 或 Ubuntu 上，下载 [x64](https://ovis.sh/Ovis-linux-x64.deb) 或 [arm64](https://ovis.sh/Ovis-linux-arm64.deb) 版桌面应用并安装（`sudo apt install ./Ovis-linux-x64.deb`）。其他发行版请下载 [x64](https://ovis.sh/Ovis-linux-x64.AppImage) 或 [arm64](https://ovis.sh/Ovis-linux-arm64.AppImage) 版 AppImage，添加执行权限（`chmod +x`）后打开；它需要 FUSE 2（`libfuse2`）。
+- **Linux：** 在 Debian 或 Ubuntu 上，下载 [x64](https://ovis.sh/Ovis-linux-x64.deb) 或 [arm64](https://ovis.sh/Ovis-linux-arm64.deb) 版桌面应用并安装（`sudo apt install ./Ovis-linux-*.deb`）。其他发行版请下载 [x64](https://ovis.sh/Ovis-linux-x64.AppImage) 或 [arm64](https://ovis.sh/Ovis-linux-arm64.AppImage) 版 AppImage，添加执行权限（`chmod +x Ovis-linux-*.AppImage`）后打开。
 
-桌面应用自带所需的一切，无需另外安装，并使用独立于 herdr 的自有终端。若要让 Ovis 使用你的 herdr 会话，请在 Linux 或 macOS 的终端中运行：
+Mac 和 Linux 桌面应用自带所需的一切，无需另外安装，并使用独立于 herdr 的自有终端。若要让 Ovis 使用你的 herdr 会话，请在 Linux 或 macOS 的终端中运行：
 
 ```bash
 curl -fsSL https://ovis.sh/install.sh | sh

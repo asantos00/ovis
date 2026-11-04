@@ -42,9 +42,9 @@ Ovis は、自分のコンピューターで動くコーディングエージェ
 
 - **Mac:** デスクトップアプリを [Apple シリコン版](https://ovis.sh/Ovis-mac-arm64.dmg) または [Intel 版](https://ovis.sh/Ovis-mac-x64.dmg) でダウンロードして開き、Ovis を **アプリケーション**（Applications）にドラッグします。
 - **Windows:** [Ovis.exe](https://ovis.sh/Ovis.exe) をダウンロードして実行し、**Install** をクリックします。
-- **Linux:** Debian や Ubuntu では、デスクトップアプリの [x64 版](https://ovis.sh/Ovis-linux-x64.deb) または [arm64 版](https://ovis.sh/Ovis-linux-arm64.deb) をダウンロードしてインストールします（`sudo apt install ./Ovis-linux-x64.deb`）。ほかのディストリビューションでは [x64 版](https://ovis.sh/Ovis-linux-x64.AppImage) または [arm64 版](https://ovis.sh/Ovis-linux-arm64.AppImage) の AppImage に実行権限を付けて（`chmod +x`）開きます。FUSE 2（`libfuse2`）が必要です。
+- **Linux:** Debian や Ubuntu では、デスクトップアプリの [x64 版](https://ovis.sh/Ovis-linux-x64.deb) または [arm64 版](https://ovis.sh/Ovis-linux-arm64.deb) をダウンロードしてインストールします（`sudo apt install ./Ovis-linux-*.deb`）。ほかのディストリビューションでは [x64 版](https://ovis.sh/Ovis-linux-x64.AppImage) または [arm64 版](https://ovis.sh/Ovis-linux-arm64.AppImage) の AppImage に実行権限を付けて（`chmod +x Ovis-linux-*.AppImage`）開きます。
 
-デスクトップアプリは必要なものをすべて含んでいるので、ほかに何もインストールせず、herdr とは別の独自のターミナルを使います。herdr のセッションで Ovis を使うには、Linux か macOS のターミナルで次を実行します。
+Mac と Linux のデスクトップアプリは必要なものをすべて含んでいるので、ほかに何もインストールせず、herdr とは別の独自のターミナルを使います。herdr のセッションで Ovis を使うには、Linux か macOS のターミナルで次を実行します。
 
 ```bash
 curl -fsSL https://ovis.sh/install.sh | sh
