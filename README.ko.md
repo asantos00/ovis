@@ -42,7 +42,7 @@ Ovis는 내 컴퓨터의 코딩 에이전트를 폰, 아무 브라우저, Mac �
 
 - **Mac:** [Ovis.dmg](https://ovis.sh/Ovis.dmg)를 내려받아 열고 **설치**(Install)를 누릅니다.
 - **Windows:** [Ovis.exe](https://ovis.sh/Ovis.exe)를 내려받아 실행하고 **설치**(Install)를 누릅니다.
-- **Linux:** 데스크톱 앱 [Ovis-linux-x64.AppImage](https://ovis.sh/Ovis-linux-x64.AppImage)(또는 [arm64](https://ovis.sh/Ovis-linux-arm64.AppImage))를 내려받아 실행 권한을 주고(`chmod +x`) 엽니다. 필요한 것을 모두 담고 있어 따로 설치할 것이 없습니다. 또는 터미널에서 실행합니다.
+- **Linux:** 데스크톱 앱 [Ovis-linux-x64.AppImage](https://ovis.sh/Ovis-linux-x64.AppImage)(또는 [arm64](https://ovis.sh/Ovis-linux-arm64.AppImage))를 내려받아 실행 권한을 주고(`chmod +x`) 엽니다(다른 AppImage처럼 FUSE 2, `libfuse2`가 필요합니다). 필요한 것을 모두 담고 있어 따로 설치할 것이 없고, herdr와 별개인 자체 터미널을 씁니다. herdr 세션을 쓰려면 명령어로 설치하세요. 또는 터미널에서 실행합니다.
   ```bash
   curl -fsSL https://ovis.sh/install.sh | sh
   ```

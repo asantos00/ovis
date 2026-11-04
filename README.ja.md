@@ -42,7 +42,7 @@ Ovis は、自分のコンピューターで動くコーディングエージェ
 
 - **Mac:** [Ovis.dmg](https://ovis.sh/Ovis.dmg) をダウンロードして開き、**Install** をクリックします。
 - **Windows:** [Ovis.exe](https://ovis.sh/Ovis.exe) をダウンロードして実行し、**Install** をクリックします。
-- **Linux:** デスクトップアプリ [Ovis-linux-x64.AppImage](https://ovis.sh/Ovis-linux-x64.AppImage)（または [arm64](https://ovis.sh/Ovis-linux-arm64.AppImage)）をダウンロードし、実行権限を付けて（`chmod +x`）開きます。必要なものをすべて含んでいるので、ほかに何もインストールしません。またはターミナルで次を実行します。
+- **Linux:** デスクトップアプリ [Ovis-linux-x64.AppImage](https://ovis.sh/Ovis-linux-x64.AppImage)（または [arm64](https://ovis.sh/Ovis-linux-arm64.AppImage)）をダウンロードし、実行権限を付けて（`chmod +x`）開きます（ほかの AppImage と同じく FUSE 2、`libfuse2` が必要です）。必要なものをすべて含んでいるので、ほかに何もインストールせず、herdr とは別の独自のターミナルを使います。herdr のセッションを使うにはコマンドでインストールしてください。またはターミナルで次を実行します。
   ```bash
   curl -fsSL https://ovis.sh/install.sh | sh
   ```

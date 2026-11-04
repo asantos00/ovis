@@ -50,4 +50,10 @@ describe("linuxArch", () => {
     expect(linuxArch({ userAgent: "Mozilla/5.0 (X11; Linux aarch64; rv:131.0) Gecko/20100101 Firefox/131.0" })).toBe("arm64");
     expect(linuxArch({})).toBe("x64");
   });
+
+  it("trusts Chromium's architecture hint over its userAgent, which says x86_64 on any CPU", () => {
+    expect(linuxArch({ userAgent: UA.linux }, "arm")).toBe("arm64");
+    expect(linuxArch({ userAgent: "Mozilla/5.0 (X11; Linux aarch64) AppleWebKit/537.36" }, "x86")).toBe("x64");
+    expect(linuxArch({ userAgent: UA.linux }, "")).toBe("x64");
+  });
 });

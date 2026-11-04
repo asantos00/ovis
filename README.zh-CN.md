@@ -42,7 +42,7 @@ Ovis 把你电脑上的编程智能体带到手机、任意浏览器和 Mac 应�
 
 - **Mac：** 下载 [Ovis.dmg](https://ovis.sh/Ovis.dmg)，打开后点击 **Install**。
 - **Windows：** 下载 [Ovis.exe](https://ovis.sh/Ovis.exe)，运行后点击 **Install**。
-- **Linux：** 下载桌面应用 [Ovis-linux-x64.AppImage](https://ovis.sh/Ovis-linux-x64.AppImage)（或 [arm64](https://ovis.sh/Ovis-linux-arm64.AppImage)），添加执行权限（`chmod +x`）后打开。它自带所需的一切，无需另外安装。也可以在终端中运行：
+- **Linux：** 下载桌面应用 [Ovis-linux-x64.AppImage](https://ovis.sh/Ovis-linux-x64.AppImage)（或 [arm64](https://ovis.sh/Ovis-linux-arm64.AppImage)），添加执行权限（`chmod +x`）后打开（与其他 AppImage 一样需要 FUSE 2，即 `libfuse2`）。它自带所需的一切，无需另外安装，并使用独立于 herdr 的自有终端；要使用 herdr 会话，请改用安装命令。也可以在终端中运行：
   ```bash
   curl -fsSL https://ovis.sh/install.sh | sh
   ```
