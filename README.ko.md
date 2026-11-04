@@ -40,14 +40,17 @@ Ovis는 내 컴퓨터의 코딩 에이전트를 폰, 아무 브라우저, Mac �
 
 **컴퓨터에서**
 
-- **Mac:** [Ovis.dmg](https://ovis.sh/Ovis.dmg)를 내려받아 열고 **설치**(Install)를 누릅니다.
+- **Mac:** 데스크톱 앱을 [Apple 실리콘용](https://ovis.sh/Ovis-mac-arm64.dmg) 또는 [Intel용](https://ovis.sh/Ovis-mac-x64.dmg)으로 내려받아 열고, Ovis를 **응용 프로그램**(Applications)으로 끌어 놓습니다.
 - **Windows:** [Ovis.exe](https://ovis.sh/Ovis.exe)를 내려받아 실행하고 **설치**(Install)를 누릅니다.
-- **Linux:** 데스크톱 앱 [Ovis-linux-x64.AppImage](https://ovis.sh/Ovis-linux-x64.AppImage)(또는 [arm64](https://ovis.sh/Ovis-linux-arm64.AppImage))를 내려받아 실행 권한을 주고(`chmod +x`) 엽니다(다른 AppImage처럼 FUSE 2, `libfuse2`가 필요합니다). 필요한 것을 모두 담고 있어 따로 설치할 것이 없고, herdr와 별개인 자체 터미널을 씁니다. herdr 세션을 쓰려면 명령어로 설치하세요. 또는 터미널에서 실행합니다.
-  ```bash
-  curl -fsSL https://ovis.sh/install.sh | sh
-  ```
+- **Linux:** Debian이나 Ubuntu에서는 데스크톱 앱을 [x64용](https://ovis.sh/Ovis-linux-x64.deb) 또는 [arm64용](https://ovis.sh/Ovis-linux-arm64.deb)으로 내려받아 설치합니다(`sudo apt install ./Ovis-linux-x64.deb`). 그 밖의 배포판에서는 [x64용](https://ovis.sh/Ovis-linux-x64.AppImage) 또는 [arm64용](https://ovis.sh/Ovis-linux-arm64.AppImage) AppImage를 받아 실행 권한을 주고(`chmod +x`) 엽니다. FUSE 2(`libfuse2`)가 필요합니다.
 
-Mac·Windows 앱과 명령어는 herdr와 Bun이 없으면 함께 설치하며, Node는 필요 없습니다. 다른 설치 방법과 단계별 안내: [INSTALL.md](INSTALL.md).
+데스크톱 앱은 필요한 것을 모두 담고 있어 따로 설치할 것이 없고, herdr와 별개인 자체 터미널을 씁니다. 대신 herdr 세션과 함께 Ovis를 쓰려면 Linux나 macOS 터미널에서 실행합니다.
+
+```bash
+curl -fsSL https://ovis.sh/install.sh | sh
+```
+
+Ovis.exe와 명령어는 herdr와 Bun이 없으면 함께 설치하며, Node는 필요 없습니다. 다른 설치 방법과 단계별 안내: [INSTALL.md](INSTALL.md).
 
 **폰에서**
 

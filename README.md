@@ -38,14 +38,17 @@ Ovis brings the coding agents on your computer to your phone, any browser and th
 
 **On your computer**
 
-- **Mac:** download [Ovis.dmg](https://ovis.sh/Ovis.dmg), open it and click **Install**.
+- **Mac:** download the desktop app for [Apple silicon](https://ovis.sh/Ovis-mac-arm64.dmg) or [Intel](https://ovis.sh/Ovis-mac-x64.dmg), open it and drag Ovis to **Applications**.
 - **Windows:** download [Ovis.exe](https://ovis.sh/Ovis.exe), run it and click **Install**.
-- **Linux:** download the desktop app, [Ovis-linux-x64.AppImage](https://ovis.sh/Ovis-linux-x64.AppImage) (or [arm64](https://ovis.sh/Ovis-linux-arm64.AppImage)), make it executable (`chmod +x`) and open it (it needs FUSE 2, `libfuse2`, as AppImages do). It carries everything it needs, so nothing else is installed, and runs its own terminals apart from herdr: to reach your herdr sessions, use the command instead. Or run this in a terminal:
-  ```bash
-  curl -fsSL https://ovis.sh/install.sh | sh
-  ```
+- **Linux:** on Debian or Ubuntu, download the desktop app for [x64](https://ovis.sh/Ovis-linux-x64.deb) or [arm64](https://ovis.sh/Ovis-linux-arm64.deb) and install it (`sudo apt install ./Ovis-linux-x64.deb`). Elsewhere, take the AppImage for [x64](https://ovis.sh/Ovis-linux-x64.AppImage) or [arm64](https://ovis.sh/Ovis-linux-arm64.AppImage), make it executable (`chmod +x`) and open it; it needs FUSE 2 (`libfuse2`).
 
-The Mac and Windows apps and the command add herdr and Bun if they are missing; Node is not needed. Other ways to install, step by step: [INSTALL.md](INSTALL.md).
+The desktop app carries everything it needs, so nothing else is installed, and runs its own terminals apart from herdr. To use Ovis with your herdr sessions instead, run this in a terminal on Linux or macOS:
+
+```bash
+curl -fsSL https://ovis.sh/install.sh | sh
+```
+
+Ovis.exe and the command add herdr and Bun if they are missing; Node is not needed. Other ways to install, step by step: [INSTALL.md](INSTALL.md).
 
 **On your phone**
 
