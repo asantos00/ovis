@@ -6723,6 +6723,36 @@ Enter to select · ↑/↓ to navigate · Esc to cancel
     });
   });
 
+  // #857: Hermes's dangerous-command approval (dialogs/hermes-approval.test.ts), answered with its own arrows and Enter
+  test("answers Hermes's approval by moving to the row picked, seen there before the Enter", async () => {
+    const hermes = (name: string) => readFileSync(new URL(`./fixtures/hermes-approval/${name}.txt`, import.meta.url), "utf8");
+    const labels = ["Allow once", "Allow for this session", "Add to permanent allowlist", "Deny"];
+    const at = (row: number) => hermes("once-120").split("\n").map((line) => {
+      const index = labels.findIndex((label) => line.includes(`. ${label} `));
+      return index < 0 ? line : `│ ${index === row ? "❯" : " "}${line.slice(3)}`;
+    }).join("\n");
+    await withPane("hermes", "blocked", at(0), async (pane) => {
+      let cursor = 0;
+      pane.onSent = (sent) => { if (sent === "down") pane.screen = at(++cursor); };
+      const prompt = (await card())!;
+      expect(prompt.kind).toBe("approval");
+      expect(await answer(prompt.id, { option_index: 3 })).toEqual({ status: 200, code: undefined });
+      expect(pane.sent).toEqual(["down", "down", "down", "enter"]);
+    });
+    // another command asked meanwhile: nothing is pressed
+    await withPane("hermes", "blocked", at(0), async (pane) => {
+      const prompt = (await card())!;
+      pane.screen = at(0).replace("│ rm -rf ./scratch  ", "│ rm -rf ./other    ");
+      expect(await answer(prompt.id, { option_index: 0 })).toEqual({ status: 409, code: "prompt_changed" });
+      expect(pane.sent).toEqual([]);
+    });
+    // a panel that cut its command is left to the terminal, with no generic card of raw keys either
+    await withPane("hermes", "blocked", hermes("cut-38"), async (pane) => {
+      expect(await card()).toBeNull();
+      expect(pane.sent).toEqual([]);
+    });
+  });
+
   test("logs prompt answer requests with pane_id, prompt_matched and outcome", async () => {
     const logged: string[] = [];
     const originalLog = console.log;
