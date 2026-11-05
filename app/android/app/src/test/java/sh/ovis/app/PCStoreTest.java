@@ -196,6 +196,8 @@ public class PCStoreTest {
         assertNull(PCStore.refusedHop("http://100.64.0.1", "http://auth.tail1234.ts.net/sign_in", null, Collections.emptyList()));
         assertEquals("http://team.example.com", PCStore.refusedHop("https://ovis.example.com", "http://team.example.com/login", null, Collections.emptyList()));
         assertEquals("http://auth.example.com", PCStore.refusedHop("http://100.64.0.1", "http://auth.example.com/sign_in", null, Collections.emptyList()));
+        // an address with no origin Java can read (an underscore in the host) is refused, not a crash
+        assertEquals("https://auth_server.corp.example/login", PCStore.refusedHop("https://ovis.example.com", "https://auth_server.corp.example/login", null, Collections.emptyList()));
         // an Ovis server: judged by the whole way the probe went
         assertNull(PCStore.refusedHop("http://100.64.0.1", "https://pc.example.com/", "https://pc.example.com", Collections.singletonList("https://pc.example.com")));
         assertEquals("http://pc.example.com", PCStore.refusedHop("https://a.example.com", "https://b.example.com/", "http://pc.example.com", java.util.Arrays.asList("https://b.example.com", "http://pc.example.com")));
