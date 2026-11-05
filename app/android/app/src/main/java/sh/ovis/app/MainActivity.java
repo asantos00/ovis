@@ -26,6 +26,7 @@ import com.getcapacitor.JSObject;
 import com.getcapacitor.WebViewListener;
 import androidx.webkit.WebViewCompat;
 import androidx.webkit.WebViewFeature;
+import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -69,10 +70,10 @@ public class MainActivity extends BridgeActivity {
      * provider's, the way back to the PC) stay in the WebView, so the sign-in's cookie lands in the
      * WebView's store, which onPause flushes, rather than in the browser's.
      */
-    private boolean signingIn;
+    private volatile boolean signingIn;
 
     /** The origin the sign-in is on, so each of its steps is judged against the one before (PCStore.refusedHop). */
-    private String signInAt;
+    private volatile String signInAt;
 
     /** The page's theme-color the system bars took, put back after a configuration change. */
     private Integer barColor;
@@ -170,13 +171,7 @@ public class MainActivity extends BridgeActivity {
                             ("https".equals(url.getScheme()) || "http".equals(url.getScheme())) &&
                             !appOrigin.equals(url.getScheme() + "://" + url.getHost())
                         ) {
-                            String insecure = PCStore.refusedHop(signInAt, url.toString(), null, null);
-                            if (insecure != null) {
-                                signingIn = false;
-                                PCStore.failure = "The sign-in went over plain http to " + insecure + ", which the app does not follow on its own.";
-                                view.loadUrl(bridge.getErrorUrl());
-                                return true;
-                            }
+                            if (refuseSignInStep(url.toString(), pc)) return true;
                             signInAt = PCStore.origin(url.toString());
                             return false;
                         }
@@ -190,6 +185,23 @@ public class MainActivity extends BridgeActivity {
                             }
                         }
                         return super.shouldOverrideUrlLoading(view, request);
+                    }
+
+                    // WebView does not ask shouldOverrideUrlLoading about a form's POST: a sign-in form
+                    // posting over plain http is held here, before anything is sent
+                    @Override
+                    public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
+                        Uri url = request.getUrl();
+                        if (
+                            signingIn &&
+                            request.isForMainFrame() &&
+                            "POST".equalsIgnoreCase(request.getMethod()) &&
+                            "http".equals(url.getScheme()) &&
+                            refuseSignInStep(url.toString(), pc)
+                        ) {
+                            return new WebResourceResponse("text/plain", "utf-8", new ByteArrayInputStream(new byte[0]));
+                        }
+                        return super.shouldInterceptRequest(view, request);
                     }
 
                     // Capacitor tells its listeners of every failed request, a picture or a frame
@@ -229,8 +241,6 @@ public class MainActivity extends BridgeActivity {
                     public void onPageCommitVisible(WebView webView, String url) {
                         // the main frame's first page is on screen, before its pictures or scripts finish
                         pageShown = true;
-                        // a page of the PC ends the sign-in: from here links go as Capacitor decides
-                        if (url != null && PCStore.belongs(url, pc)) signingIn = false;
                     }
 
                     @Override
@@ -385,6 +395,21 @@ public class MainActivity extends BridgeActivity {
                 }
             });
         }, "ovis-redirect").start();
+    }
+
+    /**
+     * Whether the sign-in's next step, to `url`, is refused: over public plain http, or from https to
+     * http (PCStore.refusedHop). The way back to the PC itself is never refused, as the user chose its
+     * address. A refused step ends the sign-in on the error page. Any thread.
+     */
+    private boolean refuseSignInStep(String url, String pc) {
+        if (PCStore.belongs(url, pc)) return false;
+        String insecure = PCStore.refusedHop(signInAt, url, null, null);
+        if (insecure == null) return false;
+        signingIn = false;
+        PCStore.failure = "The sign-in went over plain http to " + insecure + ", which the app does not follow on its own.";
+        runOnUiThread(() -> bridge.getWebView().loadUrl(bridge.getErrorUrl()));
+        return true;
     }
 
     /** Opens the current PC again from its first page. */

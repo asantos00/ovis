@@ -435,11 +435,14 @@ pieces are the Java twins of the iOS ones, in `app/android/app/src/main/java/sh/
   navigations (the sign-in's pages, its identity provider's, the way back to the PC) in the
   WebView rather than the browser, so the sign-in's cookie lands in the WebView's store, which
   `onPause` flushes. A redirect over public plain http or from https to http
-  (`PCStore.refusedHop`), there or at any later step of the sign-in, ends on the error page,
-  which names where it led. So does a sign-in on a WebView without `WEB_MESSAGE_LISTENER`, where
-  Capacitor's bridge is a JavaScript interface any page could call. An identity provider
-  that refuses embedded web views (Google sign-in answers `disallowed_useragent`) still fails
-  there. After five PCs in a row made this way, the next redirect ends on the error page too. Once the first page shows, Capacitor decides on redirects
+  (`PCStore.refusedHop`), there or at any later step of the sign-in (a form's POST included,
+  which `shouldInterceptRequest` holds before it is sent), ends on the error page, which names
+  where it led; the way back to the PC's own address is never refused. So does a sign-in on a
+  WebView without `WEB_MESSAGE_LISTENER`, where Capacitor's bridge is a JavaScript interface any
+  page could call. An identity provider that refuses embedded web views (Google sign-in answers
+  `disallowed_useragent`) still fails there, and a sign-in kept in a session cookie (one with no
+  expiry) is asked for again whenever the app starts over, as Capacitor's cookie plugin clears
+  session cookies then; Cloudflare Access's cookie has an expiry. After five PCs in a row made this way, the next redirect ends on the error page too. Once the first page shows, Capacitor decides on redirects
   as before: one could then come from a link to a page that is not the PC's (another port on its
   host), which must not choose the PC.
 - `file_paths.xml` shares only the app's external Pictures folder, where Capacitor puts a photo
