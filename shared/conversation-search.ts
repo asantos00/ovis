@@ -93,6 +93,21 @@ export function matchSnippet(text: string, pattern: RegExp): Pick<ConversationSe
   return { before, match: squash(found[0]), after };
 }
 
+/**
+ * Whether `turn` may be the one `match` was found in after it changed since the search, so its name
+ * (conversationTurnAnchor) changed too: an answer that went on, or whose first tool's output came. It
+ * has the match's role and time and still holds the match with the same words before it (a turn only
+ * grows after them). Two answers of one time (Codex, when the user steers mid-task) can both pass:
+ * a pick takes such a turn only when it is the one in the conversation (ChatView revealTurn).
+ */
+export function searchedTurnChanged(turn: ConversationTurn, match: ConversationSearchMatch): boolean {
+  if (turn.role !== match.role || turn.ts !== match.ts) return false;
+  // the matched words find what the query found: the same words, any whitespace, case ignored
+  const pattern = searchPattern(match.match);
+  const snippet = pattern === null ? null : matchSnippet(searchableText(turn), pattern);
+  return snippet !== null && snippet.before === match.before && snippet.match === match.match;
+}
+
 /** The turns that hold the pattern, newest first, each with its first match. */
 export function searchTurns(turns: readonly ConversationTurn[], pattern: RegExp): ConversationSearchMatch[] {
   const matches: ConversationSearchMatch[] = [];
