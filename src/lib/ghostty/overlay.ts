@@ -102,6 +102,8 @@ export async function attachGhosttyOverlay(term: Terminal, host: HTMLElement, ta
   let rowText: string[] = [];
   // the screen a pane opens on, or is rebuilt to, is what is there already: read, not announced
   let primed = false;
+  // bytes reached libghostty since the last frame: a frame without any only scrolled the view, which announces nothing
+  let written = false;
   // what each row shows: libghostty hands over only the rows that changed, so fresh row elements are refilled from it
   let rowHtml: string[] = [];
   let cellW = 0;
@@ -137,7 +139,8 @@ export async function attachGhosttyOverlay(term: Terminal, host: HTMLElement, ta
 
   const rebuildRows = (): void => {
     text.textContent = "";
-    rowText = [];
+    // the rebuilt rows show rowHtml, so their text stays: a row the next frame leaves alone is not new (#2963)
+    rowText = rowText.slice(0, term.rows);
     primed = false;
     rowEls = [];
     for (let y = 0; y < term.rows; y++) {
@@ -273,8 +276,9 @@ export async function attachGhosttyOverlay(term: Terminal, host: HTMLElement, ta
       rowHtml[y] = html;
       rowText[y] = runs.map((run) => run.cells.map((cell) => cell.text).join("")).join("").trimEnd();
     });
-    if (primed) announce(newLines(before, rowText));
+    if (primed && written) announce(newLines(before, rowText));
     primed = true;
+    written = false;
     if (changed) {
       const c = vt.cursor();
       Object.assign(cursor.style, c.visible
@@ -309,6 +313,7 @@ export async function attachGhosttyOverlay(term: Terminal, host: HTMLElement, ta
     if (!disposed) {
       try {
         vt.write(data);
+        written = true;
       } catch (error) {
         // the module failed (a trap, out of memory): xterm draws from here on, and its write still runs
         console.warn("libghostty stopped drawing this terminal; xterm draws it", error);
