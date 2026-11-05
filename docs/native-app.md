@@ -224,7 +224,8 @@ What is there:
   connection hangs it did not paint the error page either). When a Tailscale address fails to
   load, `error.html` (on Android too) adds the same note. A redirect of the address being opened
   to another origin is handled as on Android (see [The Android app](#the-android-app)), where
-  Capacitor would send another host to Safari.
+  Capacitor would send another host to Safari, except a sign-in in front of the PC: on iOS one
+  that does not answer as Ovis still ends on the error page.
   WebKit has no public mark for a redirect, so until the first page commits,
   `NavigationFailureProxy` takes any main-frame action to another origin that comes while the
   main frame's navigation has not committed for one. Its question to `/api/health` is a
@@ -428,9 +429,15 @@ pieces are the Java twins of the iOS ones, in `app/android/app/src/main/java/sh/
   lookup, which Android cannot cut short, can add a few). An origin that answers as Ovis
   (http to https, an IP address to the PC's name, another port) becomes the PC and opens again as
   the first page, with the bridge: it gets nothing the address's own page would not have had.
-  Anything else, such as a sign-in page, another site or a loop, gets no bridge and is not saved,
-  and the error page names where the address led. After five PCs in a row made this way, the next
-  redirect ends on the error page too. Once the first page shows, Capacitor decides on redirects
+  Anything else is taken for a sign-in in front of the PC, such as Cloudflare Access or another
+  authenticating proxy: it loads in the WebView without the bridge, is never saved and never
+  becomes the PC. Until a page of the PC loads, `MainActivity` keeps main-frame http and https
+  navigations (the sign-in's pages, its identity provider's, the way back to the PC) in the
+  WebView rather than the browser, so the sign-in's cookie lands in the WebView's store, which
+  `onPause` flushes. A redirect over public plain http or from https to http
+  (`PCStore.refusedHop`) ends on the error page, which names where it led. An identity provider
+  that refuses embedded web views (Google sign-in answers `disallowed_useragent`) still fails
+  there. After five PCs in a row made this way, the next redirect ends on the error page too. Once the first page shows, Capacitor decides on redirects
   as before: one could then come from a link to a page that is not the PC's (another port on its
   host), which must not choose the PC.
 - `file_paths.xml` shares only the app's external Pictures folder, where Capacitor puts a photo
