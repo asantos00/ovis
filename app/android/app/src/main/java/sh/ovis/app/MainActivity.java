@@ -71,6 +71,9 @@ public class MainActivity extends BridgeActivity {
      */
     private boolean signingIn;
 
+    /** The origin the sign-in is on, so each of its steps is judged against the one before (PCStore.refusedHop). */
+    private String signInAt;
+
     /** The page's theme-color the system bars took, put back after a configuration change. */
     private Integer barColor;
 
@@ -167,6 +170,14 @@ public class MainActivity extends BridgeActivity {
                             ("https".equals(url.getScheme()) || "http".equals(url.getScheme())) &&
                             !appOrigin.equals(url.getScheme() + "://" + url.getHost())
                         ) {
+                            String insecure = PCStore.refusedHop(signInAt, url.toString(), null, null);
+                            if (insecure != null) {
+                                signingIn = false;
+                                PCStore.failure = "The sign-in went over plain http to " + insecure + ", which the app does not follow on its own.";
+                                view.loadUrl(bridge.getErrorUrl());
+                                return true;
+                            }
+                            signInAt = PCStore.origin(url.toString());
                             return false;
                         }
                         // Capacitor gives the browser any other host or scheme, redirects included. Until the
@@ -218,6 +229,8 @@ public class MainActivity extends BridgeActivity {
                     public void onPageCommitVisible(WebView webView, String url) {
                         // the main frame's first page is on screen, before its pictures or scripts finish
                         pageShown = true;
+                        // a page of the PC ends the sign-in: from here links go as Capacitor decides
+                        if (url != null && PCStore.belongs(url, pc)) signingIn = false;
                     }
 
                     @Override
@@ -360,8 +373,14 @@ public class MainActivity extends BridgeActivity {
                     PCStore.redirects++;
                     PCStore.open(this, ovis, PCStore.startOn(ovis, target));
                     reopen();
+                } else if (!WebViewFeature.isFeatureSupported(WebViewFeature.WEB_MESSAGE_LISTENER)) {
+                    // without it Capacitor's bridge is a JavaScript interface every page can call
+                    String place = PCStore.origin(target);
+                    PCStore.failure = "It redirected to " + place + ", which did not answer as Ovis. If that is your PC, open " + place + " itself.";
+                    bridge.getWebView().loadUrl(bridge.getErrorUrl());
                 } else {
                     signingIn = true;
+                    signInAt = PCStore.origin(target);
                     bridge.getWebView().loadUrl(target);
                 }
             });
