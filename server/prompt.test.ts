@@ -4307,6 +4307,8 @@ describe("an answer and the menu it was made for", () => {
     ompStopped?: boolean;
     /** a pi pane's pi has ended: herdr still names the pane pi, its foreground is the shell */
     piGone?: boolean;
+    /** a Hermes pane's Hermes is suspended behind its shell (Ctrl+Z): herdr still names the pane hermes, its foreground is the shell */
+    hermesStopped?: boolean;
   }
 
   async function withPane(agent: string, status: string, screen: string, run: (pane: Pane) => Promise<void>): Promise<void> {
@@ -4348,6 +4350,7 @@ describe("an answer and the menu it was made for", () => {
         if (request.method === "pane.process_info") return answer({ process_info: { foreground_processes: pane.omo?.live ? [{ pid: pane.omo.pid, argv: ["omo"] }]
           : pane.agent === "omp" ? [pane.ompStopped ? { pid: 4100, argv: ["/bin/bash"] } : { pid: 4242, argv: ["omp"] }]
           : pane.agent === "pi" ? [pane.piGone ? { pid: 4100, argv: ["/bin/bash"] } : { pid: 4343, argv: ["node", "/usr/local/bin/pi"] }]
+          : pane.agent === "hermes" ? [pane.hermesStopped ? { pid: 4100, argv: ["/bin/zsh"] } : { pid: 4444, argv: ["/usr/local/bin/hermes"] }]
           // a Codex pane runs Codex: its rollout is read only while one does
           : pane.agent === "codex" ? [{ pid: 2147483647, argv: ["/usr/bin/codex"] }] : [] } });
         // a pane whose scroll herdr does not report: a colored read counts when its text is the live screen's
@@ -6749,6 +6752,18 @@ Enter to select · ↑/↓ to navigate · Esc to cancel
     // a panel that cut its command is left to the terminal, with no generic card of raw keys either
     await withPane("hermes", "blocked", hermes("cut-38"), async (pane) => {
       expect(await card()).toBeNull();
+      expect(pane.sent).toEqual([]);
+    });
+    // the panel's text in a shell that Hermes was suspended behind (Ctrl+Z), herdr still naming the pane hermes: no card
+    await withPane("hermes", "idle", at(0), async (pane) => {
+      pane.hermesStopped = true;
+      expect(await card()).toBeNull();
+    });
+    // and Hermes suspended between the card and the answer: nothing is pressed
+    await withPane("hermes", "blocked", at(0), async (pane) => {
+      const prompt = (await card())!;
+      pane.hermesStopped = true;
+      expect(await answer(prompt.id, { option_index: 0 })).toEqual({ status: 409, code: "prompt_changed" });
       expect(pane.sent).toEqual([]);
     });
   });

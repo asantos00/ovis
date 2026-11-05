@@ -192,6 +192,12 @@ const HERMES_APPROVAL_HINT_RE = /^ {2}↑\/↓ to select, Enter to confirm(?: {2
 /** the input line while a panel holds it, the prompt's mark after it on a pane 64 columns or wider */
 const HERMES_APPROVAL_INPUT_RE = /^⚠(?: ❯)?$/u;
 
+/**
+ * the input line while any of Hermes's modals holds it (an approval, or a command's own confirmation), in
+ * every language and with a draft typed into it (cli_tui_mixin.py _get_tui_prompt_fragments)
+ */
+const HERMES_MODAL_INPUT_RE = /^⚠(?: .*)?$/u;
+
 const HERMES_RULE_RE = /^─{8,}$/u;
 
 const HERMES_APPROVAL_ROW_RE = /^([❯ ]) (\d)\. (.+)$/u;
@@ -215,9 +221,7 @@ const HERMES_SHOW_FULL = "Show full command";
  * (cli_terminal_mixin.py _status_bar_suppressed_after_resize). -1 when the screen ends otherwise.
  */
 function hermesApprovalHint(lines: string[]): number {
-  let at = lines.length - 1;
-  while (at >= 0 && !lines[at]!.trim()) at -= 1;
-  if (HERMES_RULE_RE.test(lines[at] ?? "")) at -= 1;
+  let at = hermesInputLine(lines);
   if (!HERMES_APPROVAL_INPUT_RE.test(lines[at] ?? "")) return -1;
   at -= 1;
   if (HERMES_RULE_RE.test(lines[at] ?? "")) at -= 1;
@@ -225,9 +229,22 @@ function hermesApprovalHint(lines: string[]): number {
   return HERMES_APPROVAL_HINT_RE.test(lines[at] ?? "") ? at : -1;
 }
 
-/** Whether Hermes's approval holds the pane's input, read or not: no generic card is offered over it. */
-export function hermesApprovalWaits(screen: string): boolean {
-  return hermesApprovalHint(screen.replace(ANSI_RE, "").split(/\r?\n/).map((line) => line.trimEnd())) >= 0;
+/** Where the input line is: the last line shown, or the one over the rule a pane 64 columns or wider closes it with. */
+function hermesInputLine(lines: string[]): number {
+  let at = lines.length - 1;
+  while (at >= 0 && !lines[at]!.trim()) at -= 1;
+  return HERMES_RULE_RE.test(lines[at] ?? "") ? at - 1 : at;
+}
+
+/**
+ * Whether a modal of Hermes's holds the pane's input, read or not: no generic card is offered over it.
+ * Its Enter takes the row under the cursor, Allow once as an approval opens, and the countdown on its hint
+ * changes the generic card's id every second anyway. An approval this reader leaves out (cut, in another
+ * language, a pane too narrow for its hint) and a command's confirmation alike stay for the terminal.
+ */
+export function hermesModalWaits(screen: string): boolean {
+  const lines = screen.replace(ANSI_RE, "").split(/\r?\n/).map((line) => line.trimEnd());
+  return HERMES_MODAL_INPUT_RE.test(lines[hermesInputLine(lines)] ?? "");
 }
 
 function parseHermesApproval(screen: string): ParsedPrompt | null {

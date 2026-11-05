@@ -78,6 +78,10 @@ describe("Hermes's dangerous-command approval", () => {
 
   it("leaves a panel that cuts or drops what it shows to the terminal, with no card at all", () => {
     const screen = fixture("once-120");
+    const words: [string, string][] = [["Dangerous Command", "Comando peligroso"], ["Allow once", "Permitir una vez"],
+      ["Allow for this session", "Permitir durante esta sesión"], ["Add to permanent allowlist", "Permitir siempre (lista permanente)"], ["Deny", "Denegar"]];
+    const spanish = words.reduce((shown, [from, to]) => swapRow(shown, from, to), screen)
+      .replace(/^ {2}↑\/↓ to select, Enter to confirm.*$/mu, "  ↑/↓ para seleccionar, Enter para confirmar  (3593s)");
     const cases: [string, string][] = [
       // the command cut to make room, by Hermes's own words
       ["cut-38", fixture("cut-38")],
@@ -86,6 +90,9 @@ describe("Hermes's dangerous-command approval", () => {
       ["description truncated", swapRow(screen, "recursive delete", "… (description truncated)")],
       ["compact-14-rows", fixture("compact-14-rows")],
       ["no description", screen.replace(/│ +│\n│ recursive delete +│\n/u, "")],
+      // Hermes in another language (locales/es.yaml), and a pane too narrow for the hint
+      ["Spanish", spanish],
+      ["hint cut", screen.replace(/^ {2}↑\/↓ to select, Enter to confirm.*$/mu, "  ↑/↓ to select, Enter to con")],
     ];
     for (const [name, shown] of cases) {
       expect([name, card(shown)]).toEqual([name, null]);
@@ -125,6 +132,9 @@ describe("Hermes's dangerous-command approval", () => {
     ];
     for (const [name, shown] of variants) expect([name, card(shown)]).toEqual([name, null]);
     expect(registry.waits("hermes", variants[0]![1])).toBe(false);
+    // a draft in the input: the arrows may move through it instead, so no card, and no generic one either
+    expect(registry.waits("hermes", variants[1]![1])).toBe(true);
+    expect(registry.waits("hermes", screen.replace(/^⚠ ❯$/mu, "⚠ draft"))).toBe(true);
     // another agent's screen is never Hermes's panel
     expect(parseInteractivePrompt("codex", screen)).toBeNull();
     expect(registry.waits("codex", screen)).toBe(false);

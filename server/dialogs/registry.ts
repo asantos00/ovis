@@ -2,7 +2,7 @@ import { isPiQuestionnaireScreen } from "./pi-questionnaire.ts";
 import { readers } from "./index.ts";
 import { claudeModelListWaits, CLAUDE_EFFORT_GUARD_RE } from "./claude.ts";
 import { codexModelListWaits } from "./codex.ts";
-import { hermesApprovalWaits } from "./hermes.ts";
+import { hermesModalWaits } from "./hermes.ts";
 import type { DialogReader, OmoAsk } from "./shared.ts";
 export type { DialogReader } from "./shared.ts";
 
@@ -27,6 +27,6 @@ export const registry = {
   },
   waits(agent: string, screen: string): boolean {
     return (agent === "pi" && isPiQuestionnaireScreen(screen)) || claudeModelListWaits(screen) || claudeModelListWaits(screen, CLAUDE_EFFORT_GUARD_RE) || (agent === "codex" && codexModelListWaits(screen))
-      || (agent === "hermes" && hermesApprovalWaits(screen));
+      || (agent === "hermes" && hermesModalWaits(screen));
   },
 };
