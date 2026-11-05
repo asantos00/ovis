@@ -48,6 +48,12 @@ The desktop app needs nothing else and runs its own terminals. To use your herdr
 curl -fsSL https://ovis.sh/install.sh | sh
 ```
 
+On Windows, in PowerShell:
+
+```powershell
+irm https://ovis.sh/install.ps1 | iex
+```
+
 Other ways, step by step: [INSTALL.md](INSTALL.md).
 
 **On your phone**

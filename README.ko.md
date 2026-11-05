@@ -50,6 +50,12 @@
 curl -fsSL https://ovis.sh/install.sh | sh
 ```
 
+Windows에서는 PowerShell에서:
+
+```powershell
+irm https://ovis.sh/install.ps1 | iex
+```
+
 다른 방법과 단계별 안내: [INSTALL.md](INSTALL.md).
 
 **폰에서**

@@ -50,6 +50,12 @@
 curl -fsSL https://ovis.sh/install.sh | sh
 ```
 
+在 Windows 上，在 PowerShell 中运行：
+
+```powershell
+irm https://ovis.sh/install.ps1 | iex
+```
+
 其他安装方式和分步说明：[INSTALL.md](INSTALL.md)。
 
 **在手机上**
