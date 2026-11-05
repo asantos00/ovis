@@ -72,7 +72,7 @@ A preview deploy serves it too, so a pull request can check `/demo/` on its prev
   languages when any of those changes, before the release that changes them.
 - The beta page ships its iPhone and Android sections hidden; `assets/beta.js` shows each one once
   its link is set in `BETA_LINKS` there: the TestFlight public link, and the Google Group whose
-  members may join the Google Play closed test. Its Windows tile downloads `Ovis.exe`, like the
+  members may join the Google Play closed test. Its Windows tile downloads `Ovis-win-x64.exe`, like the
   Windows download button in `assets/platform.js`, with the install command as a second way.
   On a Mac and on Linux that button downloads the desktop app for the visitor's CPU
   (`Ovis-mac-<arm64|x64>.dmg`, `Ovis-linux-<x64|arm64>.deb`), handed to the newest release by

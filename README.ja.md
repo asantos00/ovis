@@ -41,10 +41,10 @@
 **コンピューターに**
 
 - **Mac:** [Apple シリコン版](https://ovis.sh/Ovis-mac-arm64.dmg) または [Intel 版](https://ovis.sh/Ovis-mac-x64.dmg) のデスクトップアプリを **アプリケーション** にドラッグします。
-- **Windows:** [Ovis.exe](https://ovis.sh/Ovis.exe) を実行し、**Install** をクリックします。
+- **Windows:** デスクトップアプリ [Ovis-win-x64.exe](https://ovis.sh/Ovis-win-x64.exe) を実行します。
 - **Linux:** Debian・Ubuntu はデスクトップアプリの [x64](https://ovis.sh/Ovis-linux-x64.deb) か [arm64](https://ovis.sh/Ovis-linux-arm64.deb)（`sudo apt install ./Ovis-linux-*.deb`）、それ以外は AppImage の [x64](https://ovis.sh/Ovis-linux-x64.AppImage) か [arm64](https://ovis.sh/Ovis-linux-arm64.AppImage)（`chmod +x Ovis-linux-*.AppImage`）。
 
-Mac と Linux のデスクトップアプリはほかに何も要らず、独自のターミナルを使います。herdr のセッションを使うには、Linux か macOS で：
+デスクトップアプリはほかに何も要らず、独自のターミナルを使います。herdr のセッションを使うには、Linux か macOS で：
 
 ```bash
 curl -fsSL https://ovis.sh/install.sh | sh
