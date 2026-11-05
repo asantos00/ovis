@@ -93,12 +93,15 @@ to change. Also read [server/AGENTS.md](server/AGENTS.md) and [src/AGENTS.md](sr
 - The merge pass may merge on a local merge gate instead of waiting for GitHub's runs: on main
   with the PR head merged in (nothing pushed), it runs the Linux suites of the first two checks
   (`bun run check fast`, `bun run check integration`, the browser lane) with CI's parallelism on
-  CPUs of this PC that the CI runner containers and herdr's panes are kept off, reruns once an
-  integration file that failed only on timeouts, posts the result (reruns included) as a "Local
-  merge gate" PR comment, and squash-merges with `--match-head-commit` at the head it gated. It
-  needs a clear review at that head and no unresolved threads. A PR touching `app/electron/`,
-  `windows/`, `scripts/sign-mac*`, `app/ios/`, `app/android/` or `.github/workflows/` still
-  waits for GitHub's checks: only CI runs the Windows and macOS suites.
+  CPUs of this PC that the CI runner containers and herdr's panes are kept off, posts the result
+  as a "Local merge gate" PR comment, and squash-merges with `--admin --match-head-commit` at the
+  head it gated, which needs branch protection to let admins bypass the required checks. It also
+  needs a clear review at that head and no unresolved threads. An integration file whose every
+  failed test ran 2 s or more or failed on a timeout or a start that never came is rerun once,
+  and the comment lists it; any other failure is red. A PR still waits for GitHub's checks when
+  it touches what only GitHub's runners check: `app/`, `crates/`, a `.ps1`, `install.*`,
+  `.github/`, `package.json`, `bun.lock`, `patches/`, `scripts/plugin*`, or the files of a test
+  that the Windows or macOS jobs of `ci.yml` run (`server/grok.test.ts` covers `server/grok*`).
 - Run `bun run check fast` before every push, and push a PR's commits together: each push to a
   PR cancels its CI run in progress and starts every job again.
 - A handoff or a PR's Validation says which checks ran (`bun run check fast`, `full`, or which
