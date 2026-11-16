@@ -48,7 +48,6 @@ export const SETUP_KO: Record<string, string> = {
   "Accept edits": "편집 자동 허용",
   "Don't ask": "묻지 않기",
   "Bypass permissions": "권한 확인 건너뛰기",
-  "Read only": "읽기 전용",
   "Full access": "전체 권한",
   "Installed, but older than this herdr: run this to update it": "설치되어 있지만 이 herdr보다 오래되었습니다. 이 명령으로 업데이트하세요",
   "Copy the command for {name}": "{name} 명령 복사",

@@ -1393,7 +1393,7 @@ function DevicesPage({ auth, security, onSignOut, onRevokedAll, machines, pcSett
           {onSignOut && <SignOutRow viaPortal={auth?.via === "portal"} oidc={auth?.portal?.method === "oidc"} onSignOut={onSignOut} label={t("Sign out of this PC")} />}
         </SettingsGroup>
         <SettingsGroup title={t("This device")} section="phone-more">
-          <SettingsRow label={t("Keep screen on")} description={<>{t("Keeps this device's screen from turning off while a terminal or chat pane is open and the app is in front.")}{wakeLockProblem !== null && <span className="settings-condition">{wakeLockProblem}</span>}</>}>
+          <SettingsRow label={t("Keep screen on")} description={<>{t("Keeps this device's screen from turning off while a terminal, chat pane, or agent status board is open and the app is in front.")}{wakeLockProblem !== null && <span className="settings-condition">{wakeLockProblem}</span>}</>}>
             <Toggle label={t("Keep screen on")} checked={settings.keepScreenOn} onChange={(keepScreenOn) => update({ keepScreenOn })} />
           </SettingsRow>
           {/* the steps where the browser holds no prompt (Safari has none): the only way to learn how to install */}

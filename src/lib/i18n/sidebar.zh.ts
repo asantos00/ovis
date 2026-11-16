@@ -39,8 +39,6 @@ export const SIDEBAR_ZH: Record<string, string> = {
   "Retrying…": "正在重试…",
   "Use + to start a workspace": "使用 + 新建工作区",
   "No results": "无结果",
-  "You: {text}": "我：{text}",
-  "Turn failed": "出错",
   "Filter by state": "按状态筛选",
   "Search agents": "搜索 Agent",
   "Filter by state: {state}": "按状态筛选：{state}",

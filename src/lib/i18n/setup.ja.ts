@@ -48,7 +48,6 @@ export const SETUP_JA: Record<string, string> = {
   "Accept edits": "編集を自動で許可",
   "Don't ask": "確認しない",
   "Bypass permissions": "権限確認をスキップ",
-  "Read only": "読み取り専用",
   "Full access": "フルアクセス",
   "Installed, but older than this herdr: run this to update it": "インストール済みですが、この herdr より古い版です。このコマンドで更新してください",
   "Copy the command for {name}": "{name} のコマンドをコピー",

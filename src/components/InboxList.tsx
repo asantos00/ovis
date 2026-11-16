@@ -4,11 +4,11 @@ import { Ellipsis, ListFilter, Monitor, Plus, Search, Terminal, TriangleAlert, X
 
 import type { Machine } from "../../shared/machines.ts";
 import type { AgentStatus } from "../../shared/protocol.ts";
-import { heldOrder, INBOX_FILTERS, inboxEmpty, inboxFiltered, inboxKey, inboxOrder, inboxSearched, inboxSinceAt, inboxStatus, inboxWords, plainWords, type InboxFilter } from "../lib/agentInbox.ts";
+import { heldOrder, INBOX_FILTERS, inboxEmpty, inboxFiltered, inboxKey, inboxLastWords, inboxOrder, inboxSearched, inboxSinceAt, inboxStatus, inboxWords, type InboxFilter } from "../lib/agentInbox.ts";
 import { agentGroup, type AgentRow } from "../lib/agentRoster.ts";
 import { stateSince } from "../lib/agentStateSince.ts";
 import type { HeaderConnection } from "../lib/headerConnection.ts";
-import { useT, type Translate } from "../lib/i18n.ts";
+import { useT } from "../lib/i18n.ts";
 import { inboxAsks, inboxRowLine, inboxStateWord } from "../lib/inboxRow.ts";
 import { PanePressContext } from "../lib/paneSubmitContext.ts";
 import { agentName } from "../lib/runtimeMove.ts";
@@ -21,7 +21,7 @@ import { agentContext, agentTabName, paneMark } from "../lib/sidebarAgents.ts";
 import { useAgentStateStamps } from "../lib/useAgentStateSince.ts";
 import type { InboxListHandle } from "../lib/useInbox.ts";
 import { questionTargets, useInboxQuestions, type QuestionReads } from "../lib/useInboxQuestions.ts";
-import { summaryTargets, useInboxSummaries, type RowSummary, type SummaryReads } from "../lib/useInboxSummaries.ts";
+import { summaryTargets, useInboxSummaries, type SummaryReads } from "../lib/useInboxSummaries.ts";
 import { useMediaQuery } from "../lib/useMediaQuery.ts";
 import { AgentMark } from "./AgentMark.tsx";
 import { agentRowTitle, blockedNote, stateAge } from "./AgentSidebar.tsx";
@@ -86,14 +86,6 @@ const PRESS_HOLD_MS = 1000;
 /** how often the rows' times are drawn again, while one is drawn */
 const CLOCK_MS = 30_000;
 
-/** The words a row's last turn says: the agent's as written, the user's own marked as theirs. */
-function lastWords(summary: RowSummary | undefined, t: Translate): string | null {
-  if (summary === undefined) return null;
-  const text = plainWords(summary.text);
-  if (text === null) return null;
-  return summary.role === "user" ? t("You: {text}", { text }) : text;
-}
-
 /** An agent's round mark: a tile mark fills the face, any other sits on it; a pane with no agent draws the shell's glyph. */
 export function InboxAvatar({ mark }: { mark: string | null }) {
   const tile = mark !== null && TILE_MARKS.has(mark);
@@ -135,7 +127,7 @@ export function InboxList({ ref, machines, activity, watching, wide, filter, onF
     const key = inboxKey(row);
     return inboxWords({
       group: agentGroup(inboxStatus(row, activity)), blocked: online ? blockedNote(row.entry.pane, t) : null,
-      question: questions.get(key) ?? null, plan: online ? row.entry.pane.plan : undefined, last: lastWords(summaries.get(key), t),
+      question: questions.get(key) ?? null, plan: online ? row.entry.pane.plan : undefined, last: inboxLastWords(summaries.get(key), t),
     });
   };
   const found = inboxSearched(inboxFiltered(all, filter, activity), query, machines, t, wordsOf);

@@ -72,7 +72,7 @@ export const SETTINGS_HELP_ZH: Record<string, string> = {
   "The language the microphone listens for. Auto is the app's language, or the browser's when the app is not translated into it.": "麦克风听取的语言。“自动”使用应用的语言；如果应用没有翻译成该语言，则使用浏览器的语言。",
   "What turns speech into text. Auto uses the OpenAI API key when one is saved and the browser's own recognition when none is; Browser and API key keep to the one chosen.": "把语音转成文字的方式。“自动”在保存了 OpenAI API 密钥时使用密钥，否则使用浏览器自带的识别；“浏览器”和“API 密钥”则只使用所选的方式。",
   "Drops filler words and fixes spacing in what you dictated, in the chat, the terminal's input line or both; code and paths stay as spoken. Where it is off, the text stays exactly as transcribed.": "去掉听写文本中的口头语并修正空格，可选择应用于聊天、终端输入框，或两者；代码和路径保持你说的原样。未开启的地方，文本保持转写的原样。",
-  "Keeps this device's screen from turning off while a terminal or chat pane is open and the app is in front.": "在终端或聊天窗格打开且应用处于前台时，让此设备的屏幕保持常亮。",
+  "Keeps this device's screen from turning off while a terminal, chat pane, or agent status board is open and the app is in front.": "在终端、聊天窗格或 Agent 状态看板打开且应用处于前台时，让此设备的屏幕保持常亮。",
   "The herdr plugins on this PC, to read only: a plugin is installed, enabled or removed in herdr.": "此 PC 上的 herdr 插件，仅供查看：插件的安装、启用和移除都在 herdr 中进行。",
   "Where this PC's terminals come from: herdr's TUI, or herdr-core, the Herdr app's core. With both installed, choosing the other restarts Ovis and shows its terminals; the panes of both keep running.": "此 PC 的终端来自哪里：herdr 的 TUI，或 Herdr 应用的核心（herdr-core）。两者都已安装时可以选择另一个，选择后 Ovis 会重启并显示它的终端；两边的窗格都会继续运行。",
   "Also installed on this PC. Ovis is not showing its terminals now.": "此 PC 上也已安装。Ovis 当前显示的不是它的终端。",

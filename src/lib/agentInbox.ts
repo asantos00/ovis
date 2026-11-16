@@ -81,6 +81,14 @@ export function plainWords(text: string): string | null {
   return shown === "" ? null : shown;
 }
 
+/** The words a row's last turn says: the agent's as written, the user's own marked as theirs. */
+export function inboxLastWords(summary: RowSummary | undefined, t: Translate): string | null {
+  if (summary === undefined) return null;
+  const text = plainWords(summary.text);
+  if (text === null) return null;
+  return summary.role === "user" ? t("You: {text}", { text }) : text;
+}
+
 /** What a waiting agent asks, for its row: the question, then the first line of what it is about. */
 export function questionWords(words: { question: string; body: string | null }): string {
   const first = words.body?.split("\n").map((line) => line.trim()).find((line) => line !== "") ?? "";

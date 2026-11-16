@@ -48,7 +48,6 @@ export const SETUP_ZH: Record<string, string> = {
   "Accept edits": "自动接受编辑",
   "Don't ask": "不询问",
   "Bypass permissions": "跳过权限检查",
-  "Read only": "只读",
   "Full access": "完全访问",
   "Installed, but older than this herdr: run this to update it": "已安装，但比此 herdr 旧：运行此命令以更新",
   "Copy the command for {name}": "复制 {name} 的命令",

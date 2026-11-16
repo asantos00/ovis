@@ -2220,6 +2220,35 @@ Alert rows of the table above from the `--droplet-*` roles in `src/styles.css`.
   and that row. Settings →
   Devices and PCs keeps its Change PC row. A PC's own app never shows it: its sidebar lists its PCs itself.
 
+### Agent status board (`.status-board`, `.status-board-lane`, `.status-board-card`)
+- The agent status board is a dedicated, read-only page at `?app=board` (AgentStatusBoard.tsx,
+  lib/statusBoard.ts). It uses the same shown PCs, agent roster, state grouping, prompt reads and
+  last-turn summaries as the agent inbox, but it selects no pane and acknowledges no finished turn.
+  Entering it from the classic header's More menu reloads into the page; **Back to Ovis** reloads
+  out while preserving the pane and lens parameters in the address. The full reload is deliberate:
+  no terminal, chat composer, workspace tree or pane control remains mounted behind an always-on
+  display. A page opened at the board address paints its own header and **Connecting to Ovis…** line
+  before access is known, never the classic shell for a frame.
+- Brief. One owner leaves the page open on an iPad to see every agent without steering any of them.
+  Primary information: **Needs you**, then **Working**, **Done** and **Ready**, with each lane's count;
+  each agent's full title, current question, plan step or last words; agent kind and PC/workspace/tab
+  place; state and age. The only control is **Back to Ovis** in the header. Rows are articles, not
+  links or buttons, and there is no click-to-focus, menu, filter, drag, workspace action, terminal or
+  composer. An away PC's rows say **Offline** in the Ready lane. A roster read failure is a passive
+  status strip: the board keeps showing the last roster and offers no Retry control.
+- Layout follows the stable state lanes used by Conductor and Codex multi-agent views, rather than a
+  generic metric dashboard: four equal operations lanes from 900px, two on an iPad in portrait, and
+  one on a phone. Ovis adapts that pattern into continuous list surfaces, hairline separators and a
+  two-pixel state rule instead of raised dashboard cards, drag affordances or large coloured panels.
+  Lane headings and the restrained Ovis header stay visible while the page scrolls. Questions and
+  summaries wrap in full; nothing is line-clamped. Only a reconnecting live dot moves, and reduced
+  motion makes it still.
+- The header says Ovis, **Agent status board**, connection state, agent count, PC count and **Read
+  only**. The existing Appearance setting **Keep screen on** also holds a wake lock while this board
+  is visible; its description names the board. The board never grants watch-only authorization by
+  itself: device authority remains the server's access role, separate from this page's absence of
+  controls.
+
 ### Inbox mode (`.mode-inbox`, `.inbox-rail`, `.thread-title`, `.thread-top`)
 - The agent inbox is a mode of the app: the list of agents and the thread a row opens, in the
   shell's place, on a phone and on a desktop (lib/inboxMode.ts, InboxList.tsx, InboxRail.tsx,

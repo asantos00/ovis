@@ -39,8 +39,6 @@ export const SIDEBAR_KO: Record<string, string> = {
   "Retrying…": "다시 시도하는 중…",
   "Use + to start a workspace": "+ 버튼으로 워크스페이스를 시작하세요",
   "No results": "결과 없음",
-  "You: {text}": "나: {text}",
-  "Turn failed": "오류",
   "Filter by state": "상태로 거르기",
   "Search agents": "에이전트 검색",
   "Filter by state: {state}": "상태로 거르기: {state}",

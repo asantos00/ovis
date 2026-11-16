@@ -42,7 +42,7 @@ import { usePhoneSheetBack } from "./lib/sheetHistory.ts";
 import { peekFor, type PeekRequest } from "./lib/terminalPeek.ts";
 import { SHEET_QUERY } from "./lib/sheets.ts";
 import { linksSomewhere, readLink } from "./lib/deepLink.ts";
-import { pageSearch } from "./lib/pageQuery.ts";
+import { pageAddress, pageSearch } from "./lib/pageQuery.ts";
 import { copyText } from "./lib/clipboard.ts";
 import { CommandPalette } from "./components/CommandPalette.tsx";
 import { AppLayoutContext, appLayoutOf, MachineContext } from "./lib/machineContext.tsx";
@@ -152,9 +152,11 @@ import { pageStartsInInbox, useInboxMode } from "./lib/inboxMode.ts";
 import { InboxList } from "./components/InboxList.tsx";
 import { InboxConnecting, InboxFootEntry, InboxUnchosen, ThreadTitle, ThreadTop } from "./components/InboxMode.tsx";
 import { InboxRail } from "./components/InboxRail.tsx";
+import { AgentStatusBoard, AgentStatusBoardConnecting } from "./components/AgentStatusBoard.tsx";
 import { OvisMark } from "./components/OvisMark.tsx";
 import { catchTypeAhead } from "./lib/typeAhead.ts";
 import { goalStatusWord, sessionMenuLines, sizeWords, useSessionStats, workedWords } from "./lib/sessionStats.ts";
+import { statusBoardAddress, withStatusBoardAddress } from "./lib/statusBoard.ts";
 
 const APP_TITLE = "Ovis";
 /** how soon after a key press a focus counts as the user's own (lastKeyAtRef) */
@@ -236,6 +238,10 @@ function Brand() {
 
 export function App() {
   const t = useT();
+  const statusBoard = statusBoardAddress(pageSearch());
+  const statusBoardPage = (shown: boolean): string => pageAddress(window.location.pathname, withStatusBoardAddress(pageSearch(), shown), window.location.hash);
+  const openStatusBoard = (): void => window.location.assign(statusBoardPage(true));
+  const leaveStatusBoard = (): void => window.location.assign(statusBoardPage(false));
   const apple = /Mac|iPhone|iPad/.test(navigator.platform);
   const { settings, resolvedTheme, resolvedEntry, update: updateSettings } = useSettings();
   // the PCs this device hides cannot say their panes are gone (lib/namedAgentGroups.ts liveGroupKeys)
@@ -521,8 +527,8 @@ export function App() {
 
 
   const { selectedPane } = useSelectedPane({ snapshot, selectedPaneId });
-  // held only while a pane is shown: one hidden under the inbox mode's list keeps no screen on
-  useScreenWakeLock(settings.keepScreenOn && locked === false && selectedPane !== null && !inbox.shown);
+  // held while the read-only board is the page, or while a pane is shown: one hidden under the inbox list keeps no screen on
+  useScreenWakeLock(settings.keepScreenOn && locked === false && (statusBoard || (selectedPane !== null && !inbox.shown)));
   const { selectedWorkspace, presentedPaneId } = useSelectedLayout({ selectedPane, snapshot, drawerOpen: drawerOpen || inbox.shown, selectedMachineId, selectedPaneId, setSelectedPaneId, setAutoSelected });
   // the selected pane has a tab strip to rename in: its pane and workspace are in the roster
   const tabStripMounted = selectedPane !== null && selectedWorkspace !== null;
@@ -566,7 +572,7 @@ export function App() {
     : contentReady && paneContentPresented(contentKey) ? "front" : "loading",
   [locked, linkLanded, inbox.shown, drawerOpen, settingsOpen, newSessionOpen, filesOpen, filesDocked, machineDialog, paletteOpen, diffViewing, viewing, fileDocked, dialogCover, contentReady, contentKey]);
   // one source for the sidebar's two lists: live counters per PC and finishes looked at here
-  const activity = useSidebarActivityState(machines, selectedMachineId, presentedPaneId, panePresence, shareSeen);
+  const activity = useSidebarActivityState(machines, selectedMachineId, statusBoard ? null : presentedPaneId, panePresence, shareSeen);
   // and one for how long each agent has been in its state: stamped here, read by the lists (lib/useAgentStateSince.ts)
   useAgentStateStamping(machines, activity);
 
@@ -604,8 +610,8 @@ export function App() {
 
   const tabTitle = selectedPane && !inbox.shown ? tabPaneTitle(selectedPane) : null;
   useEffect(() => {
-    document.title = tabTitle ? `${tabTitle} · Ovis` : APP_TITLE;
-  }, [tabTitle]);
+    document.title = statusBoard ? `${t("Agent status board")} · Ovis` : tabTitle ? `${tabTitle} · Ovis` : APP_TITLE;
+  }, [statusBoard, tabTitle, t]);
 
   // A new tab's workspace: the named one, else the selected pane's. Its folder is the workspace's:
   // a worktree's checkout, else where the pane in front (the selected one, else the one herdr has
@@ -952,6 +958,7 @@ export function App() {
     ...(foldPane && more ? [{ id: "pane-group", label: t("Pane and tab…"), icon: PanelsTopLeft, divider: true, run: () => openMoreGroup("pane", more.anchor) }] : []),
     // the way into the agent inbox (lib/inboxMode.ts), More's last group wherever the Ovis mark is not drawn
     ...(modeOffered && !markEnters ? [{ id: "enter-inbox", label: t("Open agent inbox"), icon: Inbox, divider: true, run: () => { actions.counted?.("inbox", "menu"); enterInbox(); } }] : []),
+    { id: "status-board", label: t("Open agent status board"), icon: PanelsTopLeft, divider: true, run: openStatusBoard },
   ];
   // The inbox mode's More: what still means something in a shell with no drawer, tab row or status bar. On the list
   // only what is the app's own (the list already shows who waits first); in a thread also what is about the thread,
@@ -1024,8 +1031,9 @@ export function App() {
   if (locked === null) {
     // the auth state is unknown until /api/health or /api/session answers (ten seconds when
     // herdr is down): show the shell without the terminal, and so without a WebSocket,
-    // instead of a blank page. A page that opens in the inbox mode shows the mode's own shell: its address says
-    // the mode at the first render, and the classic header and sidebar would be painted for a frame or two
+    // instead of a blank page. A page that opens in the inbox mode or status board shows its own shell: its
+    // address says the mode at the first render, and the classic header and sidebar would be painted for a frame
+    if (statusBoard) return <AgentStatusBoardConnecting onExit={leaveStatusBoard} />;
     if (inMode) return <InboxConnecting wide={inboxWide} sidebarWidth={sidebarWidth} />;
     return (
       <div className="app">
@@ -1048,6 +1056,8 @@ export function App() {
     );
   }
   if (locked) return <AccessGate reason={lockReason} initialCode={pairCode} consumePairCode={consumePairCode} pairingUnconfirmed={pairingUnconfirmed} onPaired={onPaired} onUnlocked={unlock} />;
+  if (statusBoard) return <AgentStatusBoard machines={sidebarMachines} activity={activity} connection={rosterConnection}
+    loaded={machineRosterLoaded} failure={error} questionReads={inbox.questionReads} summaryReads={inbox.summaryReads} onExit={leaveStatusBoard} />;
 
   // The mode's list: the screen on a phone, where More is its own control (the shell draws no header over it) and
   // the header's note stands between its top controls; the column from 769px, after the mode's rail, where its row
