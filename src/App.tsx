@@ -1056,8 +1056,10 @@ export function App() {
     );
   }
   if (locked) return <AccessGate reason={lockReason} initialCode={pairCode} consumePairCode={consumePairCode} pairingUnconfirmed={pairingUnconfirmed} onPaired={onPaired} onUnlocked={unlock} />;
-  if (statusBoard) return <AgentStatusBoard machines={sidebarMachines} activity={activity} connection={rosterConnection}
-    loaded={machineRosterLoaded} failure={error} questionReads={inbox.questionReads} summaryReads={inbox.summaryReads} onExit={leaveStatusBoard} />;
+  if (statusBoard) return <MachineSessionsProvider sessions={machineSessions} machineIds={machines.map((machine) => machine.id)}>
+    <AgentStatusBoard machines={machines} activity={activity} connection={rosterConnection}
+      loaded={machineRosterLoaded} failure={error} questionReads={inbox.questionReads} summaryReads={inbox.summaryReads} onExit={leaveStatusBoard} />
+  </MachineSessionsProvider>;
 
   // The mode's list: the screen on a phone, where More is its own control (the shell draws no header over it) and
   // the header's note stands between its top controls; the column from 769px, after the mode's rail, where its row

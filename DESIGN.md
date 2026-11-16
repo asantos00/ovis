@@ -2222,8 +2222,9 @@ Alert rows of the table above from the `--droplet-*` roles in `src/styles.css`.
 
 ### Agent status board (`.status-board`, `.status-board-lane`, `.status-board-card`)
 - The agent status board is a dedicated, read-only page at `?app=board` (AgentStatusBoard.tsx,
-  lib/statusBoard.ts). It uses the same shown PCs, agent roster, state grouping, prompt reads and
-  last-turn summaries as the agent inbox, but it selects no pane and acknowledges no finished turn.
+  AgentStatusTerminal.tsx, lib/statusBoard.ts). It uses the complete PC roster regardless of a
+  browser's sidebar-only hidden-PC preference, plus the inbox's state grouping, prompt reads and
+  last-turn summaries, but it selects no pane and acknowledges no finished turn.
   Entering it from the classic header's More menu reloads into the page; **Back to Ovis** reloads
   out while preserving the pane and lens parameters in the address. The full reload is deliberate:
   no terminal, chat composer, workspace tree or pane control remains mounted behind an always-on
@@ -2232,9 +2233,17 @@ Alert rows of the table above from the `--droplet-*` roles in `src/styles.css`.
 - Brief. One owner leaves the page open on an iPad to see every agent without steering any of them.
   Primary information: **Needs you**, then **Working**, **Done** and **Ready**, with each lane's count;
   each agent's full title, current question, plan step or last words; agent kind and PC/workspace/tab
-  place; state and age. The only control is **Back to Ovis** in the header. Rows are articles, not
-  links or buttons, and there is no click-to-focus, menu, filter, drag, workspace action, terminal or
-  composer. An away PC's rows say **Offline** in the Ready lane. A roster read failure is a passive
+  place; state and age. Active workspaces are passively probed through `GET /api/workspace/pr`,
+  deduplicated per PC/workspace and limited to four concurrent reads; a compact PR badge reports its
+  number, draft/merge/check state, and an explicitly named issue from the PR title or branch. The
+  PR head is the branch; when no PR is found, the same deduplicated read falls back to repository refs
+  so active work still names its checked-out branch.
+  Tapping a row opens a full-height inspection surface with that context and the pane's live terminal.
+  It uses herdr's `watch`/`unwatch` stream with xterm `disableStdin` and `scrollback: 0`: it never
+  attaches, resizes, focuses, takes over, sends input or exposes a composer. **Back to Ovis**, row
+  inspection, closing inspection, and optional external PR/issue links are the only controls; there
+  is no menu, filter, drag, workspace action or agent action. An away PC's rows say **Offline** in the
+  Ready lane and remain present. A roster read failure is a passive
   status strip: the board keeps showing the last roster and offers no Retry control.
 - Layout follows the stable state lanes used by Conductor and Codex multi-agent views, rather than a
   generic metric dashboard: four equal operations lanes from 900px, two on an iPad in portrait, and
@@ -2243,8 +2252,9 @@ Alert rows of the table above from the `--droplet-*` roles in `src/styles.css`.
   Lane headings and the restrained Ovis header stay visible while the page scrolls. Questions and
   summaries wrap in full; nothing is line-clamped. Only a reconnecting live dot moves, and reduced
   motion makes it still.
-- The header says Ovis, **Agent status board**, connection state, agent count, PC count and **Read
-  only**. The existing Appearance setting **Keep screen on** also holds a wake lock while this board
+- The header says Ovis, **Agent status board**, connection state, agent count, complete PC count and
+  **Read only**. Every row's place starts with its PC name, including a one-PC roster. The existing
+  Appearance setting **Keep screen on** also holds a wake lock while this board
   is visible; its description names the board. The board never grants watch-only authorization by
   itself: device authority remains the server's access role, separate from this page's absence of
   controls.

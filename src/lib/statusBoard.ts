@@ -5,6 +5,8 @@
  * to the pane and lens the app was showing.
  */
 
+import type { PullRequestView } from "../../shared/pull-request.ts";
+
 const PARAM = "app";
 const BOARD = "board";
 
@@ -20,4 +22,39 @@ export function withStatusBoardAddress(search: string, board: boolean): string {
   else if (query.get(PARAM) === BOARD) query.delete(PARAM);
   const text = query.toString();
   return text ? `?${text}` : "";
+}
+
+/** A PR's compact operations-board state, checks taking precedence over merge readiness. */
+export function statusBoardPullRequestState(view: PullRequestView): "draft" | "merged" | "closed" | "failing" | "pending" | "ready" | "open" {
+  if (view.draft) return "draft";
+  if (view.state === "merged") return "merged";
+  if (view.state === "closed") return "closed";
+  if (view.checks.some((check) => check.state === "fail")) return "failing";
+  if (view.checks.some((check) => check.state === "pending")) return "pending";
+  if (view.mergeable) return "ready";
+  return "open";
+}
+
+/** An issue explicitly named by a PR title or its branch, never the PR number merely appearing in its URL. */
+export function statusBoardIssueNumber(view: PullRequestView): number | null {
+  const title = /(?:close[sd]?|fix(?:e[sd])?|resolve[sd]?)\s+#(\d{1,8})\b/i.exec(view.title)?.[1]
+    ?? /\[#(\d{1,8})\]/.exec(view.title)?.[1];
+  if (title !== undefined) return Number(title);
+  const branch = /(?:^|[\/_-])(?:issue[\/_-]?)?#?(\d{1,8})(?=$|[\/_-])/.exec(view.head_ref)?.[1];
+  return branch === undefined ? null : Number(branch);
+}
+
+/** The issue beside a GitHub PR, on that PR's repository. */
+export function statusBoardIssueUrl(view: PullRequestView, issue: number): string | null {
+  try {
+    const url = new URL(view.url);
+    const match = /^(\/[^/]+\/[^/]+)\/pull\/\d+\/?$/.exec(url.pathname);
+    if (match === null) return null;
+    url.pathname = `${match[1]}/issues/${issue}`;
+    url.search = "";
+    url.hash = "";
+    return url.toString();
+  } catch {
+    return null;
+  }
 }
