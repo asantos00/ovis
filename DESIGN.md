@@ -2239,8 +2239,10 @@ Alert rows of the table above from the `--droplet-*` roles in `src/styles.css`.
   PR head is the branch; when no PR is found, the same deduplicated read falls back to repository refs
   so active work still names its checked-out branch.
   Tapping a row opens a full-height inspection surface with that context and the pane's live terminal.
-  It uses herdr's `watch`/`unwatch` stream with xterm `disableStdin` and `scrollback: 0`: it never
-  attaches, resizes, focuses, takes over, sends input or exposes a composer. **Back to Ovis**, row
+  It uses herdr's `watch`/`unwatch` stream where available. Herdr-core lists no `watch`, so the board
+  instead polls the passive visible ANSI `pane.read` once per second and redraws only when its revision
+  changes. Both paths use xterm `disableStdin` and `scrollback: 0`: neither attaches, resizes, focuses,
+  takes over, sends input or exposes a composer. **Back to Ovis**, row
   inspection, closing inspection, and optional external PR/issue links are the only controls; there
   is no menu, filter, drag, workspace action or agent action. An away PC's rows say **Offline** in the
   Ready lane and remain present. A roster read failure is a passive

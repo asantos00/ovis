@@ -508,6 +508,12 @@ export async function fetchSession(machineId = "local"): Promise<SessionSnapshot
 /** PCs whose herdr rejected `recent_unwrapped`: an older herdr, read row by row from then on. */
 const wrappedOnly = new Set<string>();
 
+/** GET /api/pane/read: the pane's current ANSI screen, without attaching or changing its size. */
+export async function fetchPaneScreen(paneId: string, machineId = "local", signal?: AbortSignal): Promise<PaneReadResult> {
+  const query = new URLSearchParams({ pane_id: paneId, source: "visible", format: "ansi" });
+  return (await withChatReadDeadline((bounded) => getJson<{ read: PaneReadResult }>(machinePath(machineId, `pane/read?${query.toString()}`), { signal: bounded }), chatReadDeadlineMs(machineId), signal)).read;
+}
+
 /**
  * GET /api/pane/read as the chat view reads it: herdr's own scrollback (up to
  * `lines`), ANSI-stripped text. herdr owns scrollback — the attach stream cannot
