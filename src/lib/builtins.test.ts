@@ -2,7 +2,10 @@ import { describe, expect, it } from "bun:test";
 
 // the module fills in only what is missing: each built-in is taken away first, as an older Safari
 // lacks it, and Bun's own put back afterwards so later test files see the real ones
-const owners: [object, string][] = [[Promise, "withResolvers"], [AbortSignal, "any"]];
+const owners: [object, string][] = [
+  [Object, "hasOwn"], [Array.prototype, "at"], [String.prototype, "at"],
+  [Promise, "withResolvers"], [AbortSignal, "any"],
+];
 const native = owners.map(([owner, name]) => [owner, name, Object.getOwnPropertyDescriptor(owner, name)] as const);
 for (const [owner, name] of owners) delete (owner as Record<string, unknown>)[name];
 // Bun's randomUUID cannot be deleted: a crypto with getRandomValues alone stands in, as on
@@ -12,7 +15,14 @@ const nativeCrypto = host.crypto;
 const plainCrypto = { getRandomValues: nativeCrypto.getRandomValues.bind(nativeCrypto) } as Crypto;
 Object.defineProperty(globalThis, "crypto", { value: plainCrypto, configurable: true, writable: true });
 await import("./builtins.ts");
-const filled = { withResolvers: Promise.withResolvers, any: AbortSignal.any, randomUUID: plainCrypto.randomUUID.bind(plainCrypto) };
+const filled = {
+  hasOwn: Object.hasOwn,
+  arrayAt: Array.prototype.at,
+  stringAt: String.prototype.at,
+  withResolvers: Promise.withResolvers,
+  any: AbortSignal.any,
+  randomUUID: plainCrypto.randomUUID.bind(plainCrypto),
+};
 Object.defineProperty(globalThis, "crypto", { value: nativeCrypto, configurable: true, writable: true });
 for (const [owner, name, descriptor] of native) {
   delete (owner as Record<string, unknown>)[name];
@@ -21,8 +31,19 @@ for (const [owner, name, descriptor] of native) {
 
 describe("builtins for browsers older than the app's calls", () => {
   it("fills every built-in in, not left to the host's own", () => {
+    expect(filled.hasOwn).not.toBe(Object.hasOwn);
+    expect(filled.arrayAt).not.toBe(Array.prototype.at);
+    expect(filled.stringAt).not.toBe(String.prototype.at);
     expect(filled.withResolvers).not.toBe(Promise.withResolvers);
     expect(filled.any).not.toBe(AbortSignal.any);
+  });
+
+  it("provides the collection helpers used while the board renders", () => {
+    expect(filled.hasOwn({ own: true }, "own")).toBe(true);
+    expect(filled.hasOwn(Object.create({ inherited: true }), "inherited")).toBe(false);
+    expect(filled.arrayAt.call(["first", "last"], -1)).toBe("last");
+    expect(filled.arrayAt.call(["first", "last"], -3)).toBeUndefined();
+    expect(filled.stringAt.call("Ovis", -1)).toBe("s");
   });
 
   it("Promise.withResolvers settles the promise it returns", async () => {

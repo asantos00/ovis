@@ -1,7 +1,7 @@
 /**
  * The built-ins the app calls that are newer than the oldest Safari it runs on, filled in where the
- * browser lacks them (#2513). That Safari is 16.4: the app's regular expressions look behind,
- * which no earlier one parses, so an iPhone 8 or X (capped at iOS 16) runs the app from iOS 16.4.
+ * browser lacks them (#2513). The status board also runs on Safari 12 iPads used as dedicated
+ * displays, so its render path cannot assume newer collection helpers.
  * Imported first by main.tsx, before any module that may call one as it loads. A real module, not
  * an inline script: the Content-Security-Policy allows only the app's own files.
  */
@@ -10,6 +10,19 @@ const define = (owner: object, name: string, value: unknown): void => {
   if (name in owner) return;
   Object.defineProperty(owner, name, { value, writable: true, configurable: true, enumerable: false });
 };
+
+// Safari 15.4
+define(Object, "hasOwn", (value: object, key: PropertyKey): boolean => Object.prototype.hasOwnProperty.call(value, key));
+
+// Safari 15.4
+const at = function at<T>(this: ArrayLike<T>, raw: number): T | undefined {
+  const length = this.length;
+  const integer = Number.isNaN(raw) ? 0 : Math.trunc(raw);
+  const index = integer < 0 ? length + integer : integer;
+  return index < 0 || index >= length ? undefined : this[index];
+};
+define(Array.prototype, "at", at);
+define(String.prototype, "at", at);
 
 // Safari 17.4
 define(Promise, "withResolvers", function withResolvers<T>(this: PromiseConstructor) {

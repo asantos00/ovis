@@ -107,10 +107,11 @@ export function AgentStatusTerminal({ machineId, paneId }: AgentStatusTerminalPr
         setNote(message.message || t("Terminal unavailable"));
       }
     });
-    const resize = new ResizeObserver(() => {
+    const refit = (): void => {
       cancelAnimationFrame(fitFrame);
       fitFrame = requestAnimationFrame(watch);
-    });
+    };
+    const resize = typeof ResizeObserver === "undefined" ? null : new ResizeObserver(refit);
     const visibility = (): void => {
       if (document.visibilityState === "hidden") {
         stopPolling?.();
@@ -119,7 +120,8 @@ export function AgentStatusTerminal({ machineId, paneId }: AgentStatusTerminalPr
         watch();
       }
     };
-    resize.observe(host);
+    if (resize === null) window.addEventListener("resize", refit);
+    else resize.observe(host);
     document.addEventListener("visibilitychange", visibility);
     session.connect();
     fitFrame = requestAnimationFrame(watch);
@@ -127,7 +129,8 @@ export function AgentStatusTerminal({ machineId, paneId }: AgentStatusTerminalPr
     return () => {
       disposed = true;
       cancelAnimationFrame(fitFrame);
-      resize.disconnect();
+      resize?.disconnect();
+      window.removeEventListener("resize", refit);
       document.removeEventListener("visibilitychange", visibility);
       off();
       stopPolling?.();
