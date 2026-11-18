@@ -1,3 +1,4 @@
+import { authenticatedAssets } from "./scripts/authenticated-assets.ts";
 import { buildXtermSource } from "./scripts/build-xterm.ts";
 import { compressedAssets } from "./scripts/compressed-assets.ts";
 import { serviceWorkerBuild } from "./scripts/service-worker-build.ts";
@@ -39,7 +40,7 @@ const buildRevision: Plugin = {
 export default defineConfig(async ({ mode }) => ({
   // the theme boot script is emitted before compressedAssets and serviceWorkerBuild read the bundle
   plugins: [react(), thirdPartyNotices, buildRevision, themeBootstrapBuild(), compressedAssets(), serviceWorkerBuild(mode === "shell"),
-    ...(mode === "shell" ? [(await import("./scripts/shell-build.ts")).shellBuild()] : [])],
+    ...(mode === "shell" ? [(await import("./scripts/shell-build.ts")).shellBuild()] : []), authenticatedAssets()],
   define: {
     __APP_REVISION__: JSON.stringify(revision),
     __APP_VERSION__: JSON.stringify((JSON.parse(readFileSync("package.json", "utf8")) as { version: string }).version),
