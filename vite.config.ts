@@ -4,6 +4,7 @@ import { compressedAssets } from "./scripts/compressed-assets.ts";
 import { serviceWorkerBuild } from "./scripts/service-worker-build.ts";
 import { themeBootstrapBuild } from "./scripts/theme-bootstrap-build.ts";
 import { defineConfig, normalizePath, type Plugin } from "vite";
+import legacy from "@vitejs/plugin-legacy";
 import react from "@vitejs/plugin-react";
 import { fileURLToPath } from "node:url";
 import { execFileSync } from "node:child_process";
@@ -39,7 +40,7 @@ const buildRevision: Plugin = {
 // its plugin is loaded only then, so the server-served build stays as it is
 export default defineConfig(async ({ mode }) => ({
   // the theme boot script is emitted before compressedAssets and serviceWorkerBuild read the bundle
-  plugins: [react(), thirdPartyNotices, buildRevision, themeBootstrapBuild(), compressedAssets(), serviceWorkerBuild(mode === "shell"),
+  plugins: [react(), legacy({ targets: ["iOS >= 12"] }), thirdPartyNotices, buildRevision, themeBootstrapBuild(), compressedAssets(), serviceWorkerBuild(mode === "shell"),
     ...(mode === "shell" ? [(await import("./scripts/shell-build.ts")).shellBuild()] : []), authenticatedAssets()],
   define: {
     __APP_REVISION__: JSON.stringify(revision),

@@ -55,19 +55,24 @@ export function stampServiceWorker(source: string, build: string, files?: readon
 
 /**
  * Stamps dist/sw.js with the build, so every build installs a worker whose cache holds only its
- * own files. Vite copies public/ unchanged before the bundle is written, so this runs after.
+ * own files. It waits for every output pass because the legacy plugin writes modern and classic
+ * bundles separately.
  */
 export function serviceWorkerBuild(shell = false): Plugin {
-  let build = "";
-  let files: string[] = [];
+  const names = new Set<string>();
+  const outputs = new Set<string>();
   return {
     name: "service-worker-build",
     apply: "build",
-    generateBundle(_options, bundle) { build = buildId(Object.keys(bundle)); files = buildFiles(Object.keys(bundle)); },
-    writeBundle(options) {
-      const path = options.dir ? join(options.dir, "sw.js") : null;
-      if (!path || !existsSync(path)) return;
-      writeFileSync(path, stampServiceWorker(readFileSync(path, "utf8"), build, files, shell));
+    generateBundle(_options, bundle) { for (const name of Object.keys(bundle)) names.add(name); },
+    writeBundle(options) { if (options.dir) outputs.add(join(options.dir, "sw.js")); },
+    closeBundle() {
+      const build = buildId(names);
+      const files = buildFiles(names);
+      for (const path of outputs) {
+        if (!existsSync(path)) continue;
+        writeFileSync(path, stampServiceWorker(readFileSync(path, "utf8"), build, files, shell));
+      }
     },
   };
 }
