@@ -3,5 +3,5 @@
   Working, Done and Ready for an always-on tablet display, with pull request context and a tappable
   live terminal inspector that cannot send input or take over the pane, including passive screen
   polling on herdr-core servers that do not provide a terminal watch stream, plus a credentialed
-  classic bundle, built-in polyfills and terminal-resize compatibility for Safari 12 iPads used as
-  dedicated status displays.
+  classic bundle, a BigInt-free board startup path, built-in polyfills and terminal-resize
+  compatibility for Safari 12 iPads used as dedicated status displays.

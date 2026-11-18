@@ -575,7 +575,7 @@ export function encodeFrame(frame: MuxFrame): Uint8Array {
       requireProtocol(frame.payload === null, "Expected empty payload");
       payload = null; size = 0; break;
     case FrameType.PING: case FrameType.PONG: case FrameType.RECEIVED: case FrameType.CREDIT:
-      requireProtocol(typeof frame.payload === "bigint" && frame.payload >= 0n && frame.payload <= 0xffffffffffffffffn, "Invalid u64");
+      requireProtocol(typeof frame.payload === "bigint" && frame.payload >= BigInt(0) && frame.payload <= BigInt("0xffffffffffffffff"), "Invalid u64");
       payload = frame.payload; size = 8; break;
     case FrameType.HTTP_DATA:
       requireProtocol(frame.payload instanceof Uint8Array && frame.payload.byteLength > 0, "Invalid DATA");

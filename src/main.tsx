@@ -2,7 +2,7 @@
 import "./lib/builtins.ts";
 // then: every module below may read browser storage as it loads
 import "./lib/legacyStorage.ts";
-import { StrictMode } from "react";
+import { StrictMode, type ReactNode } from "react";
 import { createRoot } from "react-dom/client";
 import type { Root } from "react-dom/client";
 
@@ -10,14 +10,13 @@ import type { Root } from "react-dom/client";
 // (.btn, .input, .menu…) that component stylesheets override, and Vite emits CSS in import order
 import "./fonts/fonts.css";
 import "./styles.css";
-import { App } from "./App.tsx";
 import { AppCrash, CrashProbe } from "./components/AppCrash.tsx";
 import { FileReader } from "./components/FileReader.tsx";
 import { RenderBoundary } from "./components/RenderBoundary.tsx";
 import { readerFromSearch, reloadWhenReaderChanges } from "./lib/fileReader.ts";
 import { pageSearch } from "./lib/pageQuery.ts";
-import { bootRelayShell } from "./lib/relay/boot.ts";
 import { SettingsProvider } from "./lib/settings.ts";
+import { statusBoardAddress } from "./lib/statusBoard.ts";
 import { shellMode } from "./lib/shellMode.ts";
 import { isReportableWindowError } from "./lib/uncaughtErrors.ts";
 import "./lib/viewport.ts";
@@ -44,23 +43,40 @@ window.addEventListener("unhandledrejection", (event) => console.error("Ovis: un
 // A render error the parts below do not catch would unmount the whole tree and leave the page
 // blank, and an installed web app has no reload button: AppCrash offers one. It sits outside
 // SettingsProvider, which may be what threw.
-function renderApp(): Root {
-  const root = createRoot(mount);
+function draw(root: Root, page: ReactNode): void {
   root.render(
     <StrictMode>
       <RenderBoundary resetKey={null} fallback={(_retry, error) => <AppCrash error={error} />}>
         <CrashProbe region="root" />
-        <SettingsProvider>
-          {reader !== null ? <FileReader target={reader} /> : <App />}
-        </SettingsProvider>
+        <SettingsProvider>{page}</SettingsProvider>
       </RenderBoundary>
     </StrictMode>,
   );
+}
+
+function renderApp(): Root {
+  const root = createRoot(mount);
+  if (reader !== null) {
+    draw(root, <FileReader target={reader} />);
+    return root;
+  }
+  void import("./App.tsx").then(({ App }) => draw(root, <App />), (error: unknown) => draw(root, <AppCrash error={error} />));
+  return root;
+}
+
+function renderStatusBoard(): Root {
+  const root = createRoot(mount);
+  void import("./StatusBoardApp.tsx").then(({ StatusBoardApp }) => draw(root, <StatusBoardApp />), (error: unknown) => draw(root, <AppCrash error={error} />));
   return root;
 }
 
 // the hosted shell (app.ovis.sh) reaches its PC through the relay: it pairs or picks the PC first,
 // sets the transport, and only then mounts the app; the build a PC serves has no such meta and
-// mounts the app as before
-if (shellMode() === "relay") bootRelayShell(mount, renderApp);
+// mounts the app as before. A board address never imports the full app: Safari 12 cannot even parse
+// the relay's BigInt literals, although that display never uses relay pairing or transport.
+if (shellMode() === "relay") {
+  void import("./lib/relay/boot.ts").then(({ bootRelayShell }) => bootRelayShell(mount, renderApp), (error: unknown) => {
+    console.error("Ovis: the relay shell could not start", error);
+  });
+} else if (statusBoardAddress(pageSearch())) renderStatusBoard();
 else renderApp();
